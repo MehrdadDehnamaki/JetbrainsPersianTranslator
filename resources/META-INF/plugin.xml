@@ -1,0 +1,38 @@
+<idea-plugin>
+  <id>com.github.mdk.plugin.persiantranslator</id>
+  <name>Persian Translator</name>
+  <version>1.0</version>
+  <vendor email="mehrdad.dehnamaki@gmail.com" url="https://github.com/MehrdadDehnamaki/JetbrainsPugin_PersianTranslator">Mehrdad Dehnamaki</vendor>
+
+  <description><![CDATA[
+     For Translate :
+      <ul>
+        <li>Choose the word you want translate</li>
+        <li>Press CTRL + Alt + Q</li>
+      <ul/>
+    ]]></description>
+
+  <change-notes><![CDATA[
+      Persian to English
+      English to Persian
+      Add Cache
+    ]]></change-notes>
+
+  <idea-version since-build="145.0"/>
+
+
+  <extensions defaultExtensionNs="com.intellij">
+  </extensions>
+
+  <actions>
+    <action id="PersianTranslate" class="com.github.mdk.plugin.persiantranslator.PersianTranslatePlugin"
+            text="Translate" description="If selected text is persian, translate to english else translate to persian">
+      <add-to-group group-id="EditMenu" anchor="first"/>
+      <add-to-group group-id="EditorPopupMenu" anchor="first"/>
+      <add-to-group group-id="ConsoleEditorPopupMenu" anchor="first"/>
+      <add-to-group group-id="ConsoleView.PopupMenu" anchor="first"/>
+      <keyboard-shortcut keymap="$default" first-keystroke="ctrl alt q"/>
+    </action>
+  </actions>
+
+</idea-plugin>
