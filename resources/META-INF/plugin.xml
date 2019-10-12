@@ -25,13 +25,19 @@
   </extensions>
 
   <actions>
-    <action id="PersianTranslate" class="com.github.mdk.plugin.persiantranslator.PersianTranslatePlugin"
+    <action id="PersianTranslate" class="com.github.mdk.plugin.persiantranslator.PopupTranslatorPlugin"
             text="Translate" description="If selected text is persian, translate to english else translate to persian">
       <add-to-group group-id="EditMenu" anchor="first"/>
       <add-to-group group-id="EditorPopupMenu" anchor="first"/>
       <add-to-group group-id="ConsoleEditorPopupMenu" anchor="first"/>
       <add-to-group group-id="ConsoleView.PopupMenu" anchor="first"/>
       <keyboard-shortcut keymap="$default" first-keystroke="ctrl alt q"/>
+    </action>
+    <action id="PersianTranslateChanger" class="com.github.mdk.plugin.persiantranslator.ReplaceTranslatorPlugin"
+            text="Translate" description="If selected text is persian, replace to english else replace to persian">
+      <add-to-group group-id="EditMenu" anchor="first"/>
+      <add-to-group group-id="EditorPopupMenu" anchor="first"/>
+      <keyboard-shortcut keymap="$default" first-keystroke="ctrl alt w"/>
     </action>
   </actions>
 

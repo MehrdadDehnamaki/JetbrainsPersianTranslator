@@ -143,7 +143,7 @@ public class CacheManager {
 
 
     private static void updateCashFile(String key, String value, Lang lang) {
-        if (existCashFile.get() && key.length() > 20) {
+        if (existCashFile.get() && key.length() > 40) {
             try {
                 String line = key + CACHE_SEPARATOR + value + NEW_LINE;
                 if (lang.equals(Lang.EN)) {

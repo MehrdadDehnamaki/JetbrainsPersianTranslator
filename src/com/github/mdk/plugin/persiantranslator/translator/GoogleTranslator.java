@@ -13,7 +13,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
-public final class GoogleTranslate {
+public final class GoogleTranslator implements Translator {
 
     static final String CONNECTION_ERROR = "!@#$%^&*()_+";
     private static final String URL_ENCODE = "UTF-8";
@@ -24,14 +24,25 @@ public final class GoogleTranslate {
     private static final String BASE_URL_FORMAT_FA_TO_EN = "http://translate.google.com/translate_a/single?client=webapp&hl=en&sl=fa&tl=en&q=%s&multires=1&otf=0&pc=0&trs=1&ssel=0&tsel=0&kc=1&dt=t&ie=UTF-8&oe=UTF-8&tk=%s";
 
 
-    public GoogleTranslate() {
+    public GoogleTranslator() {
     }
 
-    String enToFa(String text) throws IOException {
+
+    @Override
+    public String translate(String text, Lang from, Lang to) throws IOException {
+        if (from.equals(Lang.FA) && to.equals(Lang.EN)) {
+            return faToEn(text);
+        } else {
+            return enToFa(text);
+        }
+    }
+
+
+    private String enToFa(String text) throws IOException {
         return translateUrl(String.format(BASE_URL_FORMAT_EN_TO_FA, encodeText(text), generateToken(text)));
     }
 
-    String faToEn(String text) throws IOException {
+    private String faToEn(String text) throws IOException {
         return translateUrl(String.format(BASE_URL_FORMAT_FA_TO_EN, encodeText(text), generateToken(text)));
     }
 

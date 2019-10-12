@@ -2,9 +2,9 @@ package com.github.mdk.plugin.persiantranslator;
 
 import com.github.mdk.plugin.persiantranslator.cache.CacheFinder;
 import com.github.mdk.plugin.persiantranslator.cache.CacheManager;
-import com.github.mdk.plugin.persiantranslator.translator.GoogleTranslate;
+import com.github.mdk.plugin.persiantranslator.translator.GoogleTranslator;
 import com.github.mdk.plugin.persiantranslator.translator.Lang;
-import com.github.mdk.plugin.persiantranslator.translator.Translator;
+import com.github.mdk.plugin.persiantranslator.translator.Translation;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.PlatformDataKeys;
@@ -21,7 +21,6 @@ import com.intellij.ui.Gray;
 import com.intellij.ui.JBColor;
 import com.intellij.ui.popup.PopupFactoryImpl;
 import org.apache.http.util.TextUtils;
-import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
 import java.util.ArrayList;
@@ -30,67 +29,61 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-public class PersianTranslatePlugin extends AnAction {
+abstract class TranslatorPlugin extends AnAction {
 
-
+    static final String ERROR_MSG = "خطا در ترجمه!";
     private static final String ICON_PATH = "/icons/translate.png";
-    private static final String ERROR_MSG = "خطا در ترجمه!";
     private static final Icon icon = new ImageIcon(ICON_PATH);
-    private static final GoogleTranslate googleTranslate = new GoogleTranslate();
+    private static final GoogleTranslator googleTranslate = new GoogleTranslator();
     private static final ExecutorService executorService = Executors.newFixedThreadPool(3);
 
-    private long mLatestClickTime;
-
-    public PersianTranslatePlugin() {
+    TranslatorPlugin() {
         super(IconLoader.getIcon(ICON_PATH));
     }
 
-    @Override
-    public void actionPerformed(@NotNull AnActionEvent e) {
-        if (!isFastClick()) {
-            getTranslation(e);
+
+    String getTranslation(AnActionEvent event) {
+        final String targetText = getTargetText(event);
+        String translated = null;
+
+        if (targetText != null && !targetText.isEmpty()) {
+            Lang from = isFarsi(targetText) ? Lang.FA : Lang.EN;
+            Lang to = isFarsi(targetText) ? Lang.EN : Lang.FA;
+            ArrayList<Callable<String>> callable = new ArrayList<>();
+            callable.add(new CacheFinder(targetText, from));
+            callable.add(new Translation(targetText, from, to, googleTranslate));
+            try {
+                translated = executorService.invokeAny(callable);
+            } catch (InterruptedException | ExecutionException e) {
+                e.printStackTrace();
+            }
         }
+        return translated;
     }
 
-    private void getTranslation(AnActionEvent event) {
-        Editor editor = event.getData(PlatformDataKeys.EDITOR);
+    private String getTargetText(AnActionEvent event) {
+        final Editor editor = getEditor(event);
         if (editor == null) {
-            return;
+            return null;
         }
-        SelectionModel model = editor.getSelectionModel();
+        final SelectionModel model = editor.getSelectionModel();
         String selectedText = model.getSelectedText();
         if (TextUtils.isEmpty(selectedText) || selectedText.contains(CacheManager.CACHE_SEPARATOR)) {
             selectedText = getCurrentWords(editor);
             if (TextUtils.isEmpty(selectedText)) {
-                return;
+                return null;
             }
         }
-        String queryText = strip(addBlanks(selectedText));
-        if (queryText.charAt(0) == ' '){
-            queryText = queryText.substring(1);
+        String targetText = strip(addBlanks(selectedText));
+        if (targetText.charAt(0) == ' ') {
+            targetText = targetText.substring(1);
         }
-
-        String tr = null;
-        Lang lang = isFarsi(queryText) ? Lang.FA : Lang.EN;
-        ArrayList<Callable<String>> callable = new ArrayList<>();
-        callable.add(new CacheFinder(queryText, lang));
-        callable.add(new Translator(queryText, lang, googleTranslate));
-        try {
-            tr = executorService.invokeAny(callable);
-        } catch (InterruptedException | ExecutionException e) {
-            e.printStackTrace();
-        }
-
-        if (tr == null) {
-            showPopupBalloon(ERROR_MSG, editor);
-        } else {
-            showPopupBalloon(tr, editor);
-        }
+        return targetText;
     }
 
     private String getCurrentWords(Editor editor) {
-        Document document = editor.getDocument();
-        CaretModel caretModel = editor.getCaretModel();
+        final Document document = editor.getDocument();
+        final CaretModel caretModel = editor.getCaretModel();
         int caretOffset = caretModel.getOffset();
         int lineNum = document.getLineNumber(caretOffset);
         int lineStartOffset = document.getLineStartOffset(lineNum);
@@ -121,7 +114,6 @@ public class PersianTranslatePlugin extends AnAction {
         if (end == 0) {
             end = lastLetter + 1;
         }
-
         return new String(chars, start, end - start);
     }
 
@@ -139,15 +131,6 @@ public class PersianTranslatePlugin extends AnAction {
                 .replaceAll("\r\n", " ").replaceAll("\\s+", " ");
     }
 
-    private boolean isFastClick() {
-        long time = System.currentTimeMillis();
-        long timeD = time - mLatestClickTime;
-        if (0 < timeD && timeD < 1000) {
-            return true;
-        }
-        mLatestClickTime = time;
-        return false;
-    }
 
     private boolean isFarsi(String strName) {
         char[] cs = strName.toCharArray();
@@ -164,12 +147,16 @@ public class PersianTranslatePlugin extends AnAction {
         return ub == Character.UnicodeBlock.OLD_PERSIAN || ub == Character.UnicodeBlock.ARABIC;
     }
 
-    private void showPopupBalloon(final String result, Editor editor) {
+    void showPopupBalloon(final String result, Editor editor) {
         ApplicationManager.getApplication().invokeLater(() -> {
             editor.putUserData(PopupFactoryImpl.ANCHOR_POPUP_POSITION, null);
             JBPopupFactory factory = JBPopupFactory.getInstance();
             factory.createHtmlTextBalloonBuilder(result, icon, new JBColor(Gray._242, Gray._0), null)
                     .createBalloon().show(factory.guessBestPopupLocation(editor), Balloon.Position.below);
         });
+    }
+
+    Editor getEditor(AnActionEvent event) {
+        return event.getData(PlatformDataKeys.EDITOR);
     }
 }
