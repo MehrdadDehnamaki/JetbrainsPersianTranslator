@@ -23,7 +23,9 @@ public class Translation implements Callable<String> {
         String tr = translator.translate(text, from, to);
         if (tr != null && !tr.isEmpty()) {
             if (tr.equals(GoogleTranslator.CONNECTION_ERROR)) {
-                tr = "لطفا اتصال به اینترنت را بررسی کنید";
+                tr = "Please check your internet connection";
+                tr += "\n";
+                tr += "لطفا اتصال به اینترنت را بررسی کنید";
             } else {
                 CacheManager.updateCache(text, tr, from);
             }

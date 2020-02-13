@@ -1,7 +1,8 @@
 package com.github.mdk.plugin.persiantranslator;
 
 import com.github.mdk.plugin.persiantranslator.cache.CacheFinder;
-import com.github.mdk.plugin.persiantranslator.cache.CacheManager;
+import com.github.mdk.plugin.persiantranslator.exception.InternalException;
+import com.github.mdk.plugin.persiantranslator.exception.NoTargetException;
 import com.github.mdk.plugin.persiantranslator.translator.GoogleTranslator;
 import com.github.mdk.plugin.persiantranslator.translator.Lang;
 import com.github.mdk.plugin.persiantranslator.translator.Translation;
@@ -9,14 +10,11 @@ import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.PlatformDataKeys;
 import com.intellij.openapi.application.ApplicationManager;
-import com.intellij.openapi.editor.CaretModel;
-import com.intellij.openapi.editor.Document;
 import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.editor.SelectionModel;
 import com.intellij.openapi.ui.popup.Balloon;
 import com.intellij.openapi.ui.popup.JBPopupFactory;
 import com.intellij.openapi.util.IconLoader;
-import com.intellij.openapi.util.TextRange;
 import com.intellij.ui.Gray;
 import com.intellij.ui.JBColor;
 import com.intellij.ui.popup.PopupFactoryImpl;
@@ -44,7 +42,7 @@ abstract class TranslatorPlugin extends AnAction {
 
     String getTranslation(AnActionEvent event) {
         final String targetText = getTargetText(event);
-        String translated = null;
+        String translated;
 
         if (targetText != null && !targetText.isEmpty()) {
             Lang from = isFarsi(targetText) ? Lang.FA : Lang.EN;
@@ -55,8 +53,10 @@ abstract class TranslatorPlugin extends AnAction {
             try {
                 translated = executorService.invokeAny(callable);
             } catch (InterruptedException | ExecutionException e) {
-                e.printStackTrace();
+                throw new InternalException();
             }
+        } else {
+            throw new NoTargetException();
         }
         return translated;
     }
@@ -68,11 +68,8 @@ abstract class TranslatorPlugin extends AnAction {
         }
         final SelectionModel model = editor.getSelectionModel();
         String selectedText = model.getSelectedText();
-        if (TextUtils.isEmpty(selectedText) || selectedText.contains(CacheManager.CACHE_SEPARATOR)) {
-            selectedText = getCurrentWords(editor);
-            if (TextUtils.isEmpty(selectedText)) {
+        if (TextUtils.isEmpty(selectedText)) {
                 return null;
-            }
         }
         String targetText = strip(addBlanks(selectedText));
         if (targetText.charAt(0) == ' ') {
@@ -81,7 +78,7 @@ abstract class TranslatorPlugin extends AnAction {
         return targetText;
     }
 
-    private String getCurrentWords(Editor editor) {
+    /*private String getCurrentWords(Editor editor) {
         final Document document = editor.getDocument();
         final CaretModel caretModel = editor.getCaretModel();
         int caretOffset = caretModel.getOffset();
@@ -115,7 +112,7 @@ abstract class TranslatorPlugin extends AnAction {
             end = lastLetter + 1;
         }
         return new String(chars, start, end - start);
-    }
+    }*/
 
     private String addBlanks(String str) {
         String temp = str.replaceAll("_", " ");
@@ -151,8 +148,11 @@ abstract class TranslatorPlugin extends AnAction {
         ApplicationManager.getApplication().invokeLater(() -> {
             editor.putUserData(PopupFactoryImpl.ANCHOR_POPUP_POSITION, null);
             JBPopupFactory factory = JBPopupFactory.getInstance();
+            String title = isFarsi(result) ? "ترجمه" : "Translation";
             factory.createHtmlTextBalloonBuilder(result, icon, new JBColor(Gray._242, Gray._0), null)
-                    .createBalloon().show(factory.guessBestPopupLocation(editor), Balloon.Position.below);
+                    .setShadow(true).setCloseButtonEnabled(true).setTitle(title)
+                    .createBalloon().
+                    show(factory.guessBestPopupLocation(editor), Balloon.Position.below);
         });
     }
 
