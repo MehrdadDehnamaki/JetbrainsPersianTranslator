@@ -18,7 +18,6 @@ import com.intellij.openapi.util.IconLoader;
 import com.intellij.ui.Gray;
 import com.intellij.ui.JBColor;
 import com.intellij.ui.popup.PopupFactoryImpl;
-import org.apache.http.util.TextUtils;
 
 import javax.swing.*;
 import java.util.ArrayList;
@@ -68,7 +67,7 @@ abstract class TranslatorPlugin extends AnAction {
         }
         final SelectionModel model = editor.getSelectionModel();
         String selectedText = model.getSelectedText();
-        if (TextUtils.isEmpty(selectedText)) {
+        if (selectedText == null || selectedText.isEmpty()) {
                 return null;
         }
         String targetText = strip(addBlanks(selectedText));

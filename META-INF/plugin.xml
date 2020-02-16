@@ -20,11 +20,13 @@
       Generating a few new bugs
     ]]></change-notes>
 
-    <idea-version since-build="145.0"/>
+    <idea-version since-build="162.0" until-build="193.0"/>
 
 
     <extensions defaultExtensionNs="com.intellij">
     </extensions>
+
+    <depends>com.intellij.modules.platform</depends>
 
     <actions>
         <action id="PersianTranslateChanger" class="com.github.mdk.plugin.persiantranslator.ReplaceTranslatorPlugin"
