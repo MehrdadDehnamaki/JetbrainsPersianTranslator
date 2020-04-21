@@ -1,4 +1,4 @@
-package com.github.mdk.plugin.persiantranslator.translator;
+package com.github.mdk.jetbrains.plugin.persiantranslator.translator;
 
 import java.io.IOException;
 import java.io.InputStreamReader;

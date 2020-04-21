@@ -1,7 +1,7 @@
-package com.github.mdk.plugin.persiantranslator;
+package com.github.mdk.jetbrains.plugin.persiantranslator;
 
-import com.github.mdk.plugin.persiantranslator.exception.InternalException;
-import com.github.mdk.plugin.persiantranslator.exception.NoTargetException;
+import com.github.mdk.jetbrains.plugin.persiantranslator.exception.InternalException;
+import com.github.mdk.jetbrains.plugin.persiantranslator.exception.NoTargetException;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.editor.Editor;
 import org.jetbrains.annotations.NotNull;

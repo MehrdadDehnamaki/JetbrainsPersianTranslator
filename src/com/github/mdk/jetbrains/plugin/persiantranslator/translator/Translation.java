@@ -1,6 +1,6 @@
-package com.github.mdk.plugin.persiantranslator.translator;
+package com.github.mdk.jetbrains.plugin.persiantranslator.translator;
 
-import com.github.mdk.plugin.persiantranslator.cache.CacheManager;
+import com.github.mdk.jetbrains.plugin.persiantranslator.cache.CacheManager;
 
 import java.util.concurrent.Callable;
 

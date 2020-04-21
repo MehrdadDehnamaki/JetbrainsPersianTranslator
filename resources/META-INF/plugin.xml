@@ -1,5 +1,5 @@
 <idea-plugin>
-    <id>com.github.mdk.plugin.persiantranslator</id>
+    <id>com.github.mdk.jetbrains.plugin.persiantranslator</id>
     <name>Persian Translator</name>
     <version>1.0</version>
     <vendor email="mehrdad.dehnamaki@gmail.com" url="https://github.com/MehrdadDehnamaki/JetbrainsPersianTranslator">
@@ -20,7 +20,7 @@
       Generating a few new bugs
     ]]></change-notes>
 
-    <idea-version since-build="162.0" until-build="193.0"/>
+    <idea-version since-build="162.0"/>
 
 
     <extensions defaultExtensionNs="com.intellij">
@@ -29,13 +29,13 @@
     <depends>com.intellij.modules.platform</depends>
 
     <actions>
-        <action id="PersianTranslateChanger" class="com.github.mdk.plugin.persiantranslator.ReplaceTranslatorPlugin"
+        <action id="PersianTranslateChanger" class="com.github.mdk.jetbrains.plugin.persiantranslator.ReplaceTranslatorPlugin"
                 text="Replace Translation" description="Replace selected text with translation">
             <add-to-group group-id="EditMenu" anchor="first"/>
             <add-to-group group-id="EditorPopupMenu" anchor="first"/>
             <keyboard-shortcut keymap="$default" first-keystroke="ctrl alt w"/>
         </action>
-        <action id="PersianTranslate" class="com.github.mdk.plugin.persiantranslator.PopupTranslatorPlugin"
+        <action id="PersianTranslate" class="com.github.mdk.jetbrains.plugin.persiantranslator.PopupTranslatorPlugin"
                 text="Translation" description="Translate the selected text">
             <add-to-group group-id="EditMenu" anchor="first"/>
             <add-to-group group-id="EditorPopupMenu" anchor="first"/>
@@ -44,5 +44,4 @@
             <keyboard-shortcut keymap="$default" first-keystroke="ctrl alt q"/>
         </action>
     </actions>
-
 </idea-plugin>

@@ -1,6 +1,6 @@
-package com.github.mdk.plugin.persiantranslator.cache;
+package com.github.mdk.jetbrains.plugin.persiantranslator.cache;
 
-import com.github.mdk.plugin.persiantranslator.translator.Lang;
+import com.github.mdk.jetbrains.plugin.persiantranslator.translator.Lang;
 
 import java.util.HashMap;
 import java.util.Map;

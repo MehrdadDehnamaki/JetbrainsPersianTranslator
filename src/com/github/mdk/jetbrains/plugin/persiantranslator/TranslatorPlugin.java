@@ -1,11 +1,11 @@
-package com.github.mdk.plugin.persiantranslator;
+package com.github.mdk.jetbrains.plugin.persiantranslator;
 
-import com.github.mdk.plugin.persiantranslator.cache.CacheFinder;
-import com.github.mdk.plugin.persiantranslator.exception.InternalException;
-import com.github.mdk.plugin.persiantranslator.exception.NoTargetException;
-import com.github.mdk.plugin.persiantranslator.translator.GoogleTranslator;
-import com.github.mdk.plugin.persiantranslator.translator.Lang;
-import com.github.mdk.plugin.persiantranslator.translator.Translation;
+import com.github.mdk.jetbrains.plugin.persiantranslator.cache.CacheFinder;
+import com.github.mdk.jetbrains.plugin.persiantranslator.exception.InternalException;
+import com.github.mdk.jetbrains.plugin.persiantranslator.exception.NoTargetException;
+import com.github.mdk.jetbrains.plugin.persiantranslator.translator.GoogleTranslator;
+import com.github.mdk.jetbrains.plugin.persiantranslator.translator.Lang;
+import com.github.mdk.jetbrains.plugin.persiantranslator.translator.Translation;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.PlatformDataKeys;
@@ -20,6 +20,7 @@ import com.intellij.ui.JBColor;
 import com.intellij.ui.popup.PopupFactoryImpl;
 
 import javax.swing.*;
+import java.awt.*;
 import java.util.ArrayList;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
@@ -148,10 +149,10 @@ abstract class TranslatorPlugin extends AnAction {
             editor.putUserData(PopupFactoryImpl.ANCHOR_POPUP_POSITION, null);
             JBPopupFactory factory = JBPopupFactory.getInstance();
             String title = isFarsi(result) ? "ترجمه" : "Translation";
-            factory.createHtmlTextBalloonBuilder(result, icon, new JBColor(Gray._242, Gray._0), null)
+            Balloon balloon = factory.createHtmlTextBalloonBuilder(result, icon, new JBColor(Gray._242, Gray._0), null)
                     .setShadow(true).setCloseButtonEnabled(true).setTitle(title)
-                    .createBalloon().
-                    show(factory.guessBestPopupLocation(editor), Balloon.Position.below);
+                    .createBalloon();
+            balloon.show(factory.guessBestPopupLocation(editor), Balloon.Position.below);
         });
     }
 
